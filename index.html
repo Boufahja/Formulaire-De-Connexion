@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Connexion</title>
+  <title>Formulaire de Connexion</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -151,6 +151,7 @@
   </div>
 
   <script>
+    const BASE_URL = '/Formulaire-De-Connexion';
     const emailInput = document.getElementById('email');
     const passwordInput = document.getElementById('password');
     const loginButton = document.getElementById('loginButton');
@@ -163,7 +164,20 @@
     const logoutButton = document.getElementById('logoutButton');
 
     function navigateTo(path) {
-      window.history.pushState({}, '', path);
+      window.history.pushState({}, '', `${BASE_URL}${path}`);
+      renderPage();
+    }
+
+    function renderPage() {
+      const path = window.location.pathname;
+
+      if (path === `${BASE_URL}/accueil`) {
+        loginPage.style.display = 'none';
+        homePage.style.display = 'block';
+      } else {
+        homePage.style.display = 'none';
+        loginPage.style.display = 'block';
+      }
     }
 
     function validateForm() {
@@ -201,8 +215,6 @@
 
       // Simulation : l'unique combinaison valide est test@example.com / 1234
       if (email === 'test@example.com' && password === '1234') {
-        loginPage.style.display = 'none';
-        homePage.style.display = 'block';
         navigateTo('/accueil');
       } else {
         popup.classList.add('active');
@@ -214,24 +226,17 @@
     });
 
     logoutButton.addEventListener('click', () => {
-      homePage.style.display = 'none';
-      loginPage.style.display = 'block';
-      emailInput.value = '';
-      passwordInput.value = '';
-      loginButton.disabled = true;
       navigateTo('/connexion');
     });
 
-    // Gestion navigation directe (si l'utilisateur recharge la page)
-    window.addEventListener('popstate', () => {
-      if (window.location.pathname === '/accueil') {
-        loginPage.style.display = 'none';
-        homePage.style.display = 'block';
-      } else {
-        homePage.style.display = 'none';
-        loginPage.style.display = 'block';
-      }
-    });
+    window.addEventListener('popstate', renderPage);
+
+    // Redirection initiale vers /connexion si on est sur la racine
+    if (window.location.pathname === `${BASE_URL}/` || window.location.pathname === `${BASE_URL}`) {
+      navigateTo('/connexion');
+    } else {
+      renderPage();
+    }
   </script>
 </body>
 </html>
