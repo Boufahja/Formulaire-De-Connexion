@@ -146,7 +146,8 @@
 
   <div id="homePage" style="display: none; text-align: center;">
     <h1>Page d'accueil</h1>
-    <p>Bienvenue sur l'application !</p>
+    <p>Bienvenue sur l'application !</p>
+    <button id="logoutButton" style="margin-top: 1rem; padding: 0.5rem 1rem; border: none; border-radius: 6px; background-color: #FF3B3B; color: white; cursor: pointer;">Déconnexion</button>
   </div>
 
   <script>
@@ -159,6 +160,11 @@
     const closePopup = document.getElementById('closePopup');
     const loginPage = document.getElementById('loginPage');
     const homePage = document.getElementById('homePage');
+    const logoutButton = document.getElementById('logoutButton');
+
+    function navigateTo(path) {
+      window.history.pushState({}, '', path);
+    }
 
     function validateForm() {
       const email = emailInput.value.trim();
@@ -170,6 +176,10 @@
 
       if (email && !isEmailValid) {
         emailError.textContent = 'Adresse e-mail invalide.';
+      }
+
+      if (!password) {
+        passwordError.textContent = 'Le mot de passe ne peut pas être vide.';
       }
 
       loginButton.disabled = !(isEmailValid && password.length > 0);
@@ -184,10 +194,16 @@
       const email = emailInput.value.trim();
       const password = passwordInput.value.trim();
 
+      if (!password) {
+        passwordError.textContent = 'Le mot de passe ne peut pas être vide.';
+        return;
+      }
+
       // Simulation : l'unique combinaison valide est test@example.com / 1234
       if (email === 'test@example.com' && password === '1234') {
         loginPage.style.display = 'none';
         homePage.style.display = 'block';
+        navigateTo('/accueil');
       } else {
         popup.classList.add('active');
       }
@@ -195,6 +211,26 @@
 
     closePopup.addEventListener('click', () => {
       popup.classList.remove('active');
+    });
+
+    logoutButton.addEventListener('click', () => {
+      homePage.style.display = 'none';
+      loginPage.style.display = 'block';
+      emailInput.value = '';
+      passwordInput.value = '';
+      loginButton.disabled = true;
+      navigateTo('/connexion');
+    });
+
+    // Gestion navigation directe (si l'utilisateur recharge la page)
+    window.addEventListener('popstate', () => {
+      if (window.location.pathname === '/accueil') {
+        loginPage.style.display = 'none';
+        homePage.style.display = 'block';
+      } else {
+        homePage.style.display = 'none';
+        loginPage.style.display = 'block';
+      }
     });
   </script>
 </body>
